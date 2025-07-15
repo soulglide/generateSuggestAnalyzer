@@ -1,0 +1,4 @@
+prompts:
+  suggest:
+    path: prompts/suggest.gprompt
+    description: "Suggestキーワードを整形して表示します。"

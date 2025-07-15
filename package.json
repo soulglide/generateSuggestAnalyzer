@@ -1,0 +1,26 @@
+{
+  "name": "suggest-analyzer-app",
+  "version": "1.0.0",
+  "description": "Google Suggest keywords analyzer desktop app",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "tsc && cp src/index.html src/style.css dist/",
+    "watch": "tsc -w",
+    "dev": "npm run build && electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.15.0",
+    "axios": "^1.7.2",
+    "dotenv": "^17.2.0",
+    "iconv-lite": "^0.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "electron": "^31.0.1",
+    "typescript": "^5.4.5"
+  }
+}
