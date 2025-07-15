@@ -105,7 +105,7 @@ async function generateReportWithGemini(data: SuggestionResult[], geminiApiKey: 
 }
 
 // --- 公開関数 ---
-export async function analyzeKeywords(keyword: string, geminiApiKey: string, searchEngineId: string): Promise<string> {
+export async function analyzeKeywords(keyword: string, geminiApiKey: string, searchEngineId: string, resultCount: number): Promise<string> {
   // 内部関数にAPIキーを渡す
   const getGoogleSearchResultCountWithKeys = (query: string) => getGoogleSearchResultCount(query, geminiApiKey, searchEngineId);
   const generateReportWithGeminiWithKey = (data: SuggestionResult[]) => generateReportWithGemini(data, geminiApiKey);
@@ -131,7 +131,7 @@ export async function analyzeKeywords(keyword: string, geminiApiKey: string, sea
   const sortedResults = suggestionResults
     .filter(r => r.searchVolume > 0)
     .sort((a, b) => a.searchVolume - b.searchVolume)
-    .slice(0, 5);
+    .slice(0, resultCount);
 
   writeLog(`フィルタリング・ソート後の結果: ${JSON.stringify(sortedResults)}`);
 

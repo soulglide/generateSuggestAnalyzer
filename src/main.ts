@@ -22,6 +22,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      devTools: false,
     },
   });
 
@@ -44,11 +45,11 @@ app.on('window-all-closed', () => {
   }
 });
 
-ipcMain.handle('analyze-keywords', async (event, keyword: string) => {
+ipcMain.handle('analyze-keywords', async (event, keyword: string, resultCount: number) => {
   try {
         const geminiApiKey = process.env.GEMINI_API_KEY!;
     const searchEngineId = process.env.SEARCH_ENGINE_ID!;
-    const report = await analyzeKeywords(keyword, geminiApiKey, searchEngineId);
+    const report = await analyzeKeywords(keyword, geminiApiKey, searchEngineId, resultCount);
     return report;
   } catch (error) {
     console.error(error);
