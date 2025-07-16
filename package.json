@@ -15,7 +15,9 @@
     "productName": "Suggest Analyzer",
     "files": [
       "dist/**/*",
-      "node_modules/**/*"
+      "node_modules/**/*",
+      ".env",
+      "prompts/**/*"
     ],
     "mac": {
       "target": "dmg"

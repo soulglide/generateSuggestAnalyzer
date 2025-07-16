@@ -4,9 +4,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as iconv from 'iconv-lite';
 
-const ANALYZER_LOG_FILE = path.join(process.cwd(), 'analyzer_debug.log');
+let ANALYZER_LOG_FILE: string; // Changed from const to let
 
 function writeLog(message: string) {
+  if (!ANALYZER_LOG_FILE) { // Added check
+    console.error("ANALYZER_LOG_FILE is not set. Cannot write log.");
+    return;
+  }
   fs.appendFileSync(ANALYZER_LOG_FILE, `${new Date().toISOString()} - ${message}\n`);
 }
 
@@ -28,7 +32,7 @@ async function getGoogleSuggestions(keyword: string): Promise<string[]> {
     const response = await axios.get(`http://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(keyword)}&hl=ja`, { responseType: 'arraybuffer' });
     const decodedData = iconv.decode(response.data, 'Shift_JIS');
     const jsonData = JSON.parse(decodedData);
-    writeLog(`Google Suggest API からの生データ: ${JSON.stringify(jsonData)}`); // ここを追加
+    writeLog(`Google Suggest API からの生データ: ${JSON.stringify(jsonData)}`);
     if (jsonData && Array.isArray(jsonData[1])) {
       return jsonData[1];
     }
@@ -92,7 +96,7 @@ async function generateReportWithGemini(data: SuggestionResult[], geminiApiKey: 
           delay *= 2; // Exponential backoff
         } else {
           writeLog(`Gemini APIのリトライにすべて失敗しました。`);
-          return `[エラー] Gemini APIが大変混み合っています。しばらくしてから再度お試しください。\n\n` + `--- 競合キーワード Top 5 ---\n${data.map((d, i) => `${i+1}. ${d.keyword} (${d.searchVolume.toLocaleString()}件)`).join('\n')}`;
+          return `[エラー] Gemini APIが大変混み合っています。しばらくしてから再度お試しください.\n\n` + `--- 競合キーワード Top 5 ---\n${data.map((d, i) => `${i+1}. ${d.keyword} (${d.searchVolume.toLocaleString()}件)`).join('\n')}`;
         }
       } else {
         writeLog(`Geminiでのレポート生成に失敗しました: ${error}`);
@@ -105,7 +109,10 @@ async function generateReportWithGemini(data: SuggestionResult[], geminiApiKey: 
 }
 
 // --- 公開関数 ---
-export async function analyzeKeywords(keyword: string, geminiApiKey: string, searchEngineId: string, resultCount: number): Promise<string> {
+export async function analyzeKeywords(keyword: string, geminiApiKey: string, searchEngineId: string, resultCount: number, logDirPath: string): Promise<string> { // Added logDirPath
+  ANALYZER_LOG_FILE = path.join(logDirPath, 'analyzer_debug.log'); // Set ANALYZER_LOG_FILE here
+  writeLog("Analyzer started. Log file: " + ANALYZER_LOG_FILE); // Log the path
+
   // 内部関数にAPIキーを渡す
   const getGoogleSearchResultCountWithKeys = (query: string) => getGoogleSearchResultCount(query, geminiApiKey, searchEngineId);
   const generateReportWithGeminiWithKey = (data: SuggestionResult[]) => generateReportWithGemini(data, geminiApiKey);
