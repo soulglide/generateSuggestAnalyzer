@@ -58,6 +58,7 @@ button {
   cursor: pointer;
   font-size: 16px;
   width: 100%;
+  margin-top: 10px; /* ボタン間のスペース */
 }
 
 button:hover {
@@ -67,6 +68,14 @@ button:hover {
 button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+}
+
+.secondary-button {
+  background-color: #6c757d; /* 灰色 */
+}
+
+.secondary-button:hover {
+  background-color: #5a6268;
 }
 
 .result-container {

@@ -3,6 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const keywordInput = document.getElementById('keyword-input') as HTMLInputElement;
   const resultCountInput = document.getElementById('result-count-input') as HTMLInputElement;
   const resultDiv = document.getElementById('result') as HTMLDivElement;
+  const clearButton = document.getElementById('clear-btn') as HTMLButtonElement;
+
+  clearButton.addEventListener('click', () => {
+    resultDiv.innerHTML = '';
+    keywordInput.value = ''; // キーワード入力フィールドをクリア
+  });
 
   analyzeButton.addEventListener('click', async () => {
     const keyword = keywordInput.value;
