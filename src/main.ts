@@ -42,6 +42,8 @@ try {
 
 console.log('Electronメインプロセスが起動しました。');
 
+console.log(`[Debug] Log file path: ${app.getPath('logs')}`);
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,

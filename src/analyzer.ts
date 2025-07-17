@@ -70,7 +70,7 @@ async function getGoogleSearchResultCount(query: string, customSearchApiKey: str
 
 async function generateReportWithGemini(data: SuggestionResult[], geminiApiKey: string): Promise<string> {
   if (!geminiApiKey) {
-    return '[エラー] GEMINI_API_KEYが環境変数に設定されていません.\n簡易レポートを生成します.\n\n' + `--- 競合キーワード Top 5 ---\n${data.map((d, i) => `${i+1}. ${d.keyword} (${d.searchVolume.toLocaleString()}件)`).join('\n')}`;
+    return '[エラー] GEMINI_API_KEYが環境変数に設定されていません.\n簡易レポートを生成します.\n\n' + `--- 競合キーワード Top ${data.length} ---\n${data.map((d, i) => `${i+1}. ${d.keyword} (${d.searchVolume.toLocaleString()}件)`).join('\n')}`;
   }
     const genAI = new GoogleGenerativeAI(geminiApiKey);
   const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
@@ -96,11 +96,11 @@ async function generateReportWithGemini(data: SuggestionResult[], geminiApiKey: 
           delay *= 2; // Exponential backoff
         } else {
           writeLog(`Gemini APIのリトライにすべて失敗しました。`);
-          return `[エラー] Gemini APIが大変混み合っています。しばらくしてから再度お試しください.\n\n` + `--- 競合キーワード Top 5 ---\n${data.map((d, i) => `${i+1}. ${d.keyword} (${d.searchVolume.toLocaleString()}件)`).join('\n')}`;
+          return `[エラー] Gemini APIが大変混み合っています。しばらくしてから再度お試しください.\n\n` + `--- 競合キーワード Top ${data.length} ---\n${data.map((d, i) => `${i+1}. ${d.keyword} (${d.searchVolume.toLocaleString()}件)`).join('\n')}`;
         }
       } else {
         writeLog(`Geminiでのレポート生成に失敗しました: ${error}`);
-        return `[エラー] Geminiでのレポート生成に失敗しました.\n${error.message}\n\n` + `--- 競合キーワード Top 5 ---\n${data.map((d, i) => `${i+1}. ${d.keyword} (${d.searchVolume.toLocaleString()}件)`).join('\n')}`;
+        return `[エラー] Geminiでのレポート生成に失敗しました.\n${error.message}\n\n` + `--- 競合キーワード Top ${data.length} ---\n${data.map((d, i) => `${i+1}. ${d.keyword} (${d.searchVolume.toLocaleString()}件)`).join('\n')}`;
       }
     }
   }
@@ -111,6 +111,7 @@ async function generateReportWithGemini(data: SuggestionResult[], geminiApiKey: 
 // --- 公開関数 ---
 export async function analyzeKeywords(keyword: string, geminiApiKey: string, searchEngineId: string, resultCount: number, logDirPath: string): Promise<string> { // Added logDirPath
   ANALYZER_LOG_FILE = path.join(logDirPath, 'analyzer_debug.log'); // Set ANALYZER_LOG_FILE here
+  writeLog(`analyzeKeywordsに渡されたresultCount: ${resultCount}`); // ★★★ デバッグコード追加 ★★★
   writeLog("Analyzer started. Log file: " + ANALYZER_LOG_FILE); // Log the path
 
   // 内部関数にAPIキーを渡す
